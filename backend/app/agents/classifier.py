@@ -1,4 +1,4 @@
-"""Agent 1 - Complaint classifier. Claude structured output with a deterministic fallback."""
+"""Agent 1 - Complaint classifier. LLM structured output with a deterministic fallback."""
 import logging
 import re
 
@@ -179,7 +179,7 @@ def classify(text: str, subject: str = "", use_llm: bool = True) -> dict:
             res["engine"] = llm.engine_name()
             return res
         except Exception as exc:
-            log.warning("Claude classification failed, using heuristic: %s", exc)
+            log.warning("LLM classification failed, using heuristic: %s", exc)
     res = _normalize(heuristic(text, subject), text)
     res["engine"] = "heuristic"
     return res

@@ -1,4 +1,4 @@
-"""Agent 4 - Management report. Numbers are computed in SQL/Python; Claude only writes the narrative."""
+"""Agent 4 - Management report. Numbers are computed in SQL/Python; the LLM only writes the narrative."""
 import json
 import logging
 from collections import Counter
@@ -116,7 +116,7 @@ def generate_report(db: Session, days: int = 7, end: datetime | None = None, use
             narrative = llm.complete(system=SYSTEM, user=json.dumps(stats, default=str), max_tokens=900)
             engine = llm.engine_name()
         except Exception as exc:
-            log.warning("Claude report narrative failed: %s", exc)
+            log.warning("LLM report narrative failed: %s", exc)
     if not narrative:
         narrative = _fallback_narrative(stats)
     title = f"# Weekly Quality & Customer Report ({stats['period_start']} to {stats['period_end']})\n\n"

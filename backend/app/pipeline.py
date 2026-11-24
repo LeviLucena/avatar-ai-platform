@@ -113,7 +113,7 @@ def process_complaint(db: Session, complaint_id: int, use_llm: bool = True) -> C
         raise ValueError(f"complaint {complaint_id} not found")
     text = f"{c.subject}\n{c.body}"
 
-    # 1. classify (Claude structured output, heuristic fallback)
+    # 1. classify (LLM structured output, heuristic fallback)
     a = classifier.classify(c.body, c.subject, use_llm=use_llm)
     c.category, c.sentiment, c.health_risk, c.language, c.engine = (
         a["category"], a["sentiment"], a["health_risk"], a["language"], a["engine"],

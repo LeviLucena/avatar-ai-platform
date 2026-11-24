@@ -1,4 +1,4 @@
-"""Agent 5 - Operations assistant: Claude tool use over internal data with role-based permissions.
+"""Agent 5 - Operations assistant: LLM tool use over internal data with role-based permissions.
 
 Security model
 - The model never writes SQL. It can only call a fixed set of parameterised, read-only tools.
@@ -199,7 +199,7 @@ def ask(db: Session, user: User, question: str, history: list[dict] | None = Non
             )
             return {"answer": text, "trace": trace, "engine": llm.engine_name(), "tools_available": allowed_tools(user.role)}
         except Exception as exc:
-            log.warning("Claude ops agent failed, using keyword router: %s", exc)
+            log.warning("LLM ops agent failed, using keyword router: %s", exc)
     return {**_fallback(db, user, question), "engine": "heuristic", "tools_available": allowed_tools(user.role)}
 
 

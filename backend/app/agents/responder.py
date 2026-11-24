@@ -1,4 +1,4 @@
-"""Agent 3 - Response drafter: RAG over policies + Claude, with deterministic guardrails."""
+"""Agent 3 - Response drafter: RAG over policies + LLM, with deterministic guardrails."""
 import logging
 import re
 
@@ -99,7 +99,7 @@ def draft(db: Session, c: Complaint, *, category: str, severity: str, summary: s
                 log.info("Draft for complaint %s failed guardrails %s, using template", c.id, bad)
                 text, engine = "", "heuristic"
         except Exception as exc:
-            log.warning("Claude draft failed: %s", exc)
+            log.warning("LLM draft failed: %s", exc)
     if not text:
         text = template(c, category, severity)
         if engine == "heuristic" and flags:
