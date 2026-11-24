@@ -21,6 +21,7 @@ class LLMUnavailable(RuntimeError):
     pass
 
 
+FINAL_PROMPT = "Stop calling tools. Using ONLY the tool results gathered above, answer the user's question now. If the data is insufficient, say exactly what is missing."
 _clients: dict[str, Any] = {}
 _THINK = re.compile(r"<think>.*?</think>", re.S | re.I)
 
@@ -157,7 +158,10 @@ def _oa_run_agent(system, messages, tools, call_tool, model, max_turns, max_toke
                 trace.append({"tool": tc.function.name, "input": args, "ok": False, "error": str(exc)})
                 content = f"ERROR: {exc}"
             msgs.append({"role": "tool", "tool_call_id": tc.id, "content": content})
-    return "I could not finish within the allowed number of steps.", trace
+    # step budget exhausted: force a final answer from what was already collected (no more tools)
+    msgs.append({"role": "user", "content": FINAL_PROMPT})
+    resp = _oa_chat(model=model, messages=msgs, max_tokens=max_tokens, temperature=0.2)
+    return _clean(resp.choices[0].message.content) or "I could not complete this request.", trace
 
 
 # ------------------------------------------------------------------ public API
@@ -218,7 +222,9 @@ def run_agent(*, system: str, messages: list[dict], tools: list[dict], call_tool
                 content, is_error = f"ERROR: {exc}", True
             results.append({"type": "tool_result", "tool_use_id": block.id, "content": content, "is_error": is_error})
         msgs.append({"role": "user", "content": results})
-    return "I could not finish within the allowed number of steps.", trace
+    msgs.append({"role": "user", "content": FINAL_PROMPT})
+    resp = client.messages.create(model=model, max_tokens=max_tokens, system=system, messages=msgs)
+    return "".join(b.text for b in resp.content if b.type == "text").strip() or "I could not complete this request.", trace
 
 
 def _size(out: Any) -> int:

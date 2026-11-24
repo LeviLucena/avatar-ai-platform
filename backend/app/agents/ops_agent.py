@@ -32,7 +32,7 @@ TOOLS: dict[str, dict] = {
     },
     "get_production_summary": {
         "roles": {"operations", "quality", "executive"},
-        "description": "Production output, defect rate and yield by product or lot for the last N days.",
+        "description": "Production output, defect rate and yield by product for the last N days, plus a ranking of the worst lots by defect rate. Pass lot_code for the runs of one specific lot.",
         "schema": {"type": "object", "properties": {
             "days": {"type": "integer", "minimum": 1, "maximum": 90},
             "lot_code": {"type": "string"}, "product": {"type": "string"}}},
@@ -113,6 +113,15 @@ def _get_production_summary(db: Session, days: int = 14, lot_code: str = "", pro
     if lot_code:
         for r in runs:
             res.append({"lot": r.lot_code, "line": r.line, "facility": r.facility, "date": r.run_date.date().isoformat(), "produced": r.produced_units, "defects": r.defect_units})
+    else:  # ranking of lots by defect rate, so "which lot is worst?" is answerable in one call
+        lots: dict[str, dict] = {}
+        for r in runs:
+            a = lots.setdefault(r.lot_code, {"rank_lot": r.lot_code, "product": r.product.name, "produced_units": 0, "defect_units": 0})
+            a["produced_units"] += r.produced_units; a["defect_units"] += r.defect_units
+        ranked = sorted(lots.values(), key=lambda x: -(x["defect_units"] / x["produced_units"]) if x["produced_units"] else 0)[:8]
+        for a in ranked:
+            a["defect_rate_pct"] = round(a["defect_units"] / a["produced_units"] * 100, 2) if a["produced_units"] else 0
+            res.append({"rank_lot": a["rank_lot"], "lot_product": a["product"], "lot_produced_units": a["produced_units"], "lot_defect_rate_pct": a["defect_rate_pct"]})
     return res
 
 
@@ -245,9 +254,12 @@ def _render(tool: str, data) -> str:
     if tool == "get_production_summary":
         rows = [r for r in data if "product" in r]
         runs = [r for r in data if "lot" in r]
+        ranking = [r for r in data if "rank_lot" in r]
         if not rows:
             return "No production runs found."
         out = "**Production**\n" + "\n".join(f"- {r['product']}: {r['produced_units']:,} units, defect rate {r['defect_rate_pct']}%, yield {r['yield_pct']}%" for r in rows)
+        if ranking:
+            out += "\n\n**Lots with the highest defect rate**\n" + "\n".join(f"- {r['rank_lot']} ({r['lot_product']}): {r['lot_defect_rate_pct']}%" for r in ranking[:5])
         if runs:
             out += "\n\n**Runs for this lot**\n" + "\n".join(f"- {r['lot']} · {r['line']} · {r['date']}: {r['produced']:,} units, {r['defects']:,} defects ({r['defects'] / r['produced'] * 100:.1f}%)" for r in runs)
         return out
