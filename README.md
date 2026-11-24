@@ -26,6 +26,8 @@ modules built on the same foundation. Built as a portfolio project for an *AI Ba
 > **Disclaimer:** independent project with 100% fictional data. Not affiliated with or endorsed by any company. The colors
 > are inspired by natural-food branding and are **not** anyone's official palette.
 
+![alt text](https://iili.io/ofhbjcX.png)
+
 ## What it does
 
 ```
