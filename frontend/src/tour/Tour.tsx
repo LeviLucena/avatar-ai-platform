@@ -127,7 +127,7 @@ export function TourProvider({ role, email, children }: { role: string; email: s
         <div className="tour-dim" role="dialog" aria-label="Guided tour invitation">
           <div className="tour-card" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: Math.min(420, vw - 32) }}>
             <h3>Welcome!</h3>
-            <p>Want a 3-minute guided tour of what this platform does and how it works?</p>
+            <p>Want a short guided tour (about 4 minutes) of what this platform does and how it works?</p>
             <div className="tour-actions">
               <button className="btn secondary small" onClick={() => { localStorage.setItem(seenKey, '1'); setWelcome(false) }}>Maybe later</button>
               <button className="btn small" onClick={start}>Start the tour</button>

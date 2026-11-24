@@ -28,7 +28,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid g2">
-        <div className="card">
+        <div className="card" data-tour="chart-days">
           <h2>Complaints per day, by severity</h2>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={d.series.map((s: { date: string }) => ({ ...s, label: s.date.slice(5) }))}>
@@ -41,7 +41,7 @@ export default function Dashboard() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="card">
+        <div className="card" data-tour="chart-category">
           <h2>By category</h2>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={d.by_category} layout="vertical" margin={{ left: 30 }}>
@@ -56,7 +56,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid g2" style={{ marginTop: 16 }}>
-        <div className="card">
+        <div className="card" data-tour="top-issues">
           <h2>Top open quality issues</h2>
           <table>
             <thead><tr><th>Issue</th><th className="num">Complaints</th><th>Severity</th></tr></thead>
@@ -71,7 +71,7 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
-        <div className="card">
+        <div className="card" data-tour="top-lots">
           <h2>Lots with most complaints</h2>
           <table>
             <thead><tr><th>Lot</th><th className="num">Complaints</th></tr></thead>
@@ -87,7 +87,7 @@ export default function Dashboard() {
       {(d.operations || d.finance) && (
         <div className="grid g2" style={{ marginTop: 16 }}>
           {d.operations && (
-            <div className="card">
+            <div className="card" data-tour="ops-snapshot">
               <h2>Operations snapshot (14 days)</h2>
               <div className="row" style={{ gap: 28, marginBottom: 10 }}>
                 <div className="kpi"><div className="v">{d.operations.defect_rate_14d_pct}%</div><div className="l">Defect rate</div></div>
@@ -103,7 +103,7 @@ export default function Dashboard() {
             </div>
           )}
           {d.finance && (
-            <div className="card">
+            <div className="card" data-tour="finance-snapshot">
               <h2>Finance snapshot</h2>
               <div className="row" style={{ gap: 28 }}>
                 <div className="kpi"><div className="v">${Math.round(d.finance.overdue_ar_total).toLocaleString()}</div><div className="l">Overdue receivables</div></div>

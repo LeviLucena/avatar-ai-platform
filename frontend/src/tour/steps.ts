@@ -28,7 +28,7 @@ export const STEPS: Step[] = [
     route: '/',
     title: 'Welcome to the Quality AI Platform',
     body:
-      'A short tour of how customer complaints become decisions: AI triage, recurring-failure detection, escalation rules, ' +
+      'A tour of how customer complaints become decisions: AI triage, recurring-failure detection, escalation rules, ' +
       'drafted replies and an operations assistant. Everything here uses fictional data. Use the arrow keys or the buttons below.',
   },
   {
@@ -48,6 +48,62 @@ export const STEPS: Step[] = [
     body:
       'Live KPIs: critical complaints still waiting for a reply, open escalations, recurring quality issues, and the share of ' +
       'complaints triaged by AI without human effort.',
+  },
+  {
+    id: 'chart-days',
+    route: '/',
+    target: '[data-tour="chart-days"]',
+    title: 'Volume over time, by severity',
+    body:
+      'Complaints per day, stacked by severity. A growing orange or red band is an early warning: you see a problem forming ' +
+      'before anyone has to read individual emails.',
+  },
+  {
+    id: 'chart-category',
+    route: '/',
+    target: '[data-tour="chart-category"]',
+    title: 'What customers complain about',
+    body:
+      'The AI classifies every complaint into one of ten categories (foreign object, allergen, spoilage, cold chain, packaging, ' +
+      'billing and more). The ranking shows where the volume is, so the team knows what to fix first.',
+  },
+  {
+    id: 'top-issues',
+    route: '/',
+    target: '[data-tour="top-issues"]',
+    title: 'Recurring failures, ranked',
+    body:
+      'Similar complaints are grouped into one quality issue, with the product, the lot codes involved and the worst severity ' +
+      'seen. Open one to see its complaints and the related production records.',
+  },
+  {
+    id: 'top-lots',
+    route: '/',
+    target: '[data-tour="top-lots"]',
+    title: 'Which production lots are involved',
+    body:
+      'Complaints that mention a lot code are counted per lot. Three or more on the same lot within 30 days escalates ' +
+      'automatically, and a lot like this is a candidate for a stock hold.',
+  },
+  {
+    id: 'ops-snapshot',
+    section: 'ops-snapshot',
+    route: '/',
+    target: '[data-tour="ops-snapshot"]',
+    title: 'Manufacturing and supply chain at a glance',
+    body:
+      'Defect rate and yield over 14 days, late purchase orders, and every inventory item below its reorder point. Quality ' +
+      'problems can be read next to production and supply risk, in one place.',
+  },
+  {
+    id: 'finance-snapshot',
+    section: 'finance-snapshot',
+    route: '/',
+    target: '[data-tour="finance-snapshot"]',
+    title: 'Finance snapshot',
+    body:
+      'Overdue receivables across customers. The operations assistant can list the individual invoices, but only for roles that ' +
+      'are allowed to see finance data.',
   },
   {
     id: 'issue',

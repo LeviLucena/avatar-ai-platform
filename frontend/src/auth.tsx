@@ -38,5 +38,7 @@ export const ACCESS: Record<string, string[]> = {
   reports: ['support', 'quality', 'executive', 'admin'],
   intake: ['support', 'quality', 'admin'],
   admin: ['admin'],
+  'ops-snapshot': ['operations', 'quality', 'executive', 'admin'],
+  'finance-snapshot': ['finance', 'executive', 'admin'],
 }
 export const can = (role: string | undefined, section: string) => !!role && (ACCESS[section]?.includes(role) ?? true)

@@ -120,8 +120,8 @@ cd backend
 ```
 
 ## Suggested demo walkthrough
-The app has a built-in **✦ Guided tour** (button in the top bar, also offered on first sign-in): about 11 short steps that spotlight the
-key screens. It adapts to the signed-in role and skips sections that role cannot access.
+The app has a built-in **✦ Guided tour** (button in the top bar, also offered on first sign-in): up to 16 short steps (about 4 minutes) that spotlight
+the dashboard charts and tables and the key screens behind them. It adapts to the signed-in role and skips sections that role cannot access.
 
 1. **Dashboard** (as `exec`): KPIs, trend, the recurring failure on lot `CC-2611-B`, defect rate and low stock.
 2. **Quality issues → Foreign object: Chipotle Chicken Bowl**: the complaint cluster plus the lot's production record (≈3% defects vs ≈1% normal).
