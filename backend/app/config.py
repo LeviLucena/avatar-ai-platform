@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     nvidia_model_fast: str = "nvidia/nemotron-3.5-lightning-30b-a3b"  # classification / extraction
     nvidia_model_smart: str = "nvidia/nemotron-3-ultra-550b-a55b"  # drafting, agents, reports
     nvidia_timeout: int = 120
+    llm_daily_call_limit: int = 0  # 0 = unlimited; when reached, agents fall back to heuristics until tomorrow (UTC)
     # Anthropic (optional alternative)
     anthropic_api_key: str = ""
     anthropic_model_fast: str = "claude-haiku-5-5"

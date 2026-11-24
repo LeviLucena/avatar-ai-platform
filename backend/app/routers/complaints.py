@@ -13,6 +13,7 @@ from ..config import settings
 from ..db import get_db
 from ..embeddings import cosine
 from ..models import Complaint, ProductionRun, QualityIssue, User, utcnow
+from ..ratelimit import limit
 from ..security import audit, require_roles
 
 router = APIRouter(prefix="/api", tags=["complaints"])
@@ -148,7 +149,7 @@ class EmailIn(BaseModel):
     body: str = Field(min_length=5, max_length=20000)
 
 
-@router.post("/ingest/web", status_code=202)
+@router.post("/ingest/web", status_code=202, dependencies=[Depends(limit("web-min", 5, 60)), Depends(limit("web-hour", 30, 3600))])
 def ingest_web(form: WebForm, db: Session = Depends(get_db)):
     """Public endpoint behind the website's contact form."""
     c = pipeline.ingest(db, source="web", body=form.message, subject=form.subject, customer_name=form.name, customer_email=form.email)

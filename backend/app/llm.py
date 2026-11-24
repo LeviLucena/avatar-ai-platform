@@ -8,6 +8,8 @@ converted for OpenAI-compatible providers here.
 import json
 import logging
 import re
+import threading
+from datetime import datetime, timezone
 from typing import Any, Callable
 
 from .config import settings
@@ -31,10 +33,29 @@ def engine_name() -> str:
     return settings.engine_name
 
 
+_budget = {"day": None, "n": 0}
+_budget_lock = threading.Lock()
+
+
+def _spend() -> None:
+    """Daily cap on model calls: protects the API key on a public deployment."""
+    cap = settings.llm_daily_call_limit
+    if not cap:
+        return
+    today = datetime.now(timezone.utc).date()
+    with _budget_lock:
+        if _budget["day"] != today:
+            _budget["day"], _budget["n"] = today, 0
+        if _budget["n"] >= cap:
+            raise LLMUnavailable(f"Daily LLM call budget ({cap}) exhausted; using heuristic fallback")
+        _budget["n"] += 1
+
+
 def _client():
     p = settings.provider
     if not p:
         raise LLMUnavailable("No LLM key configured (demo/heuristic mode)")
+    _spend()
     if p not in _clients:
         if p == "nvidia":
             from openai import OpenAI

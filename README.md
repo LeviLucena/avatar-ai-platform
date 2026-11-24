@@ -86,7 +86,7 @@ You can switch provider with `LLM_PROVIDER=anthropic` plus `ANTHROPIC_API_KEY`. 
 ### Tests and evaluation
 ```powershell
 cd backend
-.\.venv\Scripts\python -m pytest -q                 # 27 tests: rules, guardrails, RBAC, pipeline, API
+.\.venv\Scripts\python -m pytest -q                 # 29 tests: rules, guardrails, RBAC, rate limits, pipeline, API
 .\.venv\Scripts\python -m evals.run_eval --no-llm   # heuristic only
 .\.venv\Scripts\python -m evals.run_eval            # with the LLM, if a key is set
 ```

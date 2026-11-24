@@ -123,3 +123,29 @@ def test_dashboard_sections_depend_on_role(client, tokens):
 def test_knowledge_search(client, tokens):
     r = client.post("/api/knowledge/search", json={"query": "undeclared allergen reaction"}, headers=tokens["support"]).json()
     assert r and "Allergen" in r[0]["doc"]
+
+
+def test_rate_limit_blocks_bursts(client, monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "inline_jobs", False)  # limiter is bypassed in test mode otherwise
+    monkeypatch.setattr("app.jobs.enqueue", lambda *a, **k: None)  # don't spawn a worker job
+    codes = [client.post("/api/auth/login", json={"email": "x@y.z", "password": "bad"}, headers={"X-Forwarded-For": "9.9.9.9"}).status_code for _ in range(12)]
+    assert codes[:10] == [401] * 10 and codes[10] == 429
+    other_ip = client.post("/api/auth/login", json={"email": "x@y.z", "password": "bad"}, headers={"X-Forwarded-For": "8.8.8.8"})
+    assert other_ip.status_code == 401  # limits are per client IP
+
+
+def test_llm_daily_budget(monkeypatch):
+    from app import llm
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "llm_daily_call_limit", 2)
+    monkeypatch.setattr(settings, "nvidia_api_key", "nvapi-test")
+    monkeypatch.setattr(settings, "llm_mode", "auto")
+    monkeypatch.setattr(llm, "_clients", {"nvidia": object()})
+    llm._budget.update(day=None, n=0)
+    llm._client(); llm._client()
+    import pytest as _pt
+    with _pt.raises(llm.LLMUnavailable):
+        llm._client()
