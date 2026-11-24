@@ -3,6 +3,7 @@ import { Navigate, NavLink, Outlet, Route, Routes, useNavigate } from 'react-rou
 import { api, fmtDate } from './api'
 import { can, useAuth } from './auth'
 import { Loading, usePoll } from './ui'
+import { TourProvider, useTour } from './tour/Tour'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Complaints from './pages/Complaints'
@@ -27,7 +28,7 @@ function Bell() {
     setData({ ...data, unread: 0, items: data.items.map((i: object) => ({ ...i, read: true })) })
   }
   return (
-    <div className="bell">
+    <div className="bell" data-tour="bell">
       <button className="btn secondary" onClick={() => setOpen(!open)} aria-label="Notifications">🔔{data.unread > 0 && <span className="dot">{data.unread}</span>}</button>
       {open && (
         <div className="dropdown">
@@ -51,7 +52,17 @@ function Bell() {
 }
 
 function Layout() {
+  const { user } = useAuth()
+  return (
+    <TourProvider role={user!.role} email={user!.email}>
+      <LayoutInner />
+    </TourProvider>
+  )
+}
+
+function LayoutInner() {
   const { user, logout } = useAuth()
+  const { start } = useTour()
   const role = user!.role
   const link = (to: string, label: string, icon: string, section?: string) =>
     (!section || can(role, section)) && <NavLink to={to} end={to === '/'}>{icon} {label}</NavLink>
@@ -64,7 +75,7 @@ function Layout() {
           </div>
           <div><b>Quality AI</b><small>Concept demo</small></div>
         </div>
-        <nav className="nav">
+        <nav className="nav" data-tour="nav">
           {link('/', 'Dashboard', '▦')}
           {link('/complaints', 'Complaints', '✉', 'complaints')}
           {link('/issues', 'Quality issues', '⚠', 'issues')}
@@ -83,7 +94,10 @@ function Layout() {
         </div>
       </aside>
       <main className="main">
-        <div className="row" style={{ justifyContent: 'flex-end', marginBottom: 6 }}><Bell /></div>
+        <div className="row" style={{ justifyContent: 'flex-end', marginBottom: 6 }}>
+          <button className="btn secondary" onClick={start}>✦ Guided tour</button>
+          <Bell />
+        </div>
         <Outlet />
       </main>
     </div>

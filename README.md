@@ -44,6 +44,34 @@ Weekly report: numbers computed in code; the AI only writes the narrative (every
 Operations assistant: tool-using agent over inventory, production, sales, finance and purchasing, gated by role (RBAC).
 ```
 
+### Input channels
+
+Every channel ends in the same function (`pipeline.ingest`), which stores the complaint and queues it for the agents.
+
+| Channel | How it works | Status |
+|---|---|---|
+| **Website form** (`/contact`) | Public page posting to `POST /api/ingest/web`, with validation and per-IP rate limits | Working end to end |
+| **Email webhook** | `POST /api/ingest/email`, protected by a shared secret in the `X-Ingest-Key` header | Endpoint and tests exist; **not connected to a real mail provider** |
+| **`.eml` upload** | Agents export messages from their mail client and upload them in **Intake**; sender, subject and body are parsed | Working |
+| **Simulator** | Generates realistic fictional complaints for demos (**Intake → Simulate**) | Working |
+
+Example webhook call (see `INGEST_KEY` in `.env.example`):
+```bash
+curl -X POST http://localhost:8000/api/ingest/email \
+  -H "X-Ingest-Key: dev-ingest-key" -H "Content-Type: application/json" \
+  -d '{"from_name":"Jane Doe","from_email":"jane@example.com",
+       "subject":"Plastic in my bowl","body":"Found hard plastic in my Chipotle Chicken Bowl, lot CC-2611-B."}'
+```
+
+Not implemented: mailbox polling (IMAP / Gmail API), WhatsApp, social media, phone or chat. A mail provider such as SendGrid or Mailgun
+posts form data rather than JSON, so connecting one needs a small adapter. Adding a channel never touches the rest of the pipeline:
+
+```
+email provider ──┐
+website ─────────┼─► channel adapter (translates the format) ─► ingest() ─► queue ─► agents
+WhatsApp / social┘
+```
+
 ### Engineering decisions worth highlighting
 | Topic | Decision |
 |---|---|
@@ -92,6 +120,9 @@ cd backend
 ```
 
 ## Suggested demo walkthrough
+The app has a built-in **✦ Guided tour** (button in the top bar, also offered on first sign-in): about 11 short steps that spotlight the
+key screens. It adapts to the signed-in role and skips sections that role cannot access.
+
 1. **Dashboard** (as `exec`): KPIs, trend, the recurring failure on lot `CC-2611-B`, defect rate and low stock.
 2. **Quality issues → Foreign object: Chipotle Chicken Bowl**: the complaint cluster plus the lot's production record (≈3% defects vs ≈1% normal).
 3. **Complaints → a critical one** (as `quality`): analysis, the rules that escalated it, a draft with cited sources, approve and send.
@@ -117,6 +148,8 @@ frontend/src  React + TypeScript + Vite (Recharts)
   model. Production path: a hosted embeddings model + **pgvector** (only `embeddings.py` / `rag.py` change).
 - SQLite by default so it runs without Docker; the models are SQLAlchemy and accept PostgreSQL via `DATABASE_URL`.
 - Outbound email is simulated and there is no real ERP integration (production, inventory and finance data are synthetic).
-- Authentication is JWT with demo users; SSO, rate limiting and secret rotation are missing for production use.
+- Real input channels beyond the website form, `.eml` upload and the generic webhook (mail provider, IMAP polling, WhatsApp, social) are not integrated.
+- Authentication is JWT with demo users; SSO and secret rotation are missing for production use. Rate limiting is in-memory and per process
+  (login and the public form), plus a daily cap on model calls (`LLM_DAILY_CALL_LIMIT`); a multi-instance deployment would need a shared store such as Redis.
 - Automated tests cover the heuristic mode. The Nemotron path was validated manually (classification, drafting, tool-using agent,
   report) but has no automated test.

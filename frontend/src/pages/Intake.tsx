@@ -22,7 +22,7 @@ export default function Intake() {
     <Page title="Intake & simulation" sub="Three ways complaints enter the system. Each one goes through the same queue and the same AI pipeline.">
       {err && <ErrorBox error={err} />}
       {msg && <div className="callout" style={{ marginBottom: 14 }}>✓ {msg} <button className="linkbtn" style={{ color: 'var(--green-600)' }} onClick={() => nav('/complaints')}>Open inbox →</button></div>}
-      <div className="grid g3">
+      <div className="grid g3" data-tour="channels">
         <div className="card">
           <h2>1 · Simulate incoming mail</h2>
           <p className="muted small">Generates random, realistic (fictional) complaints, including the occasional critical one.</p>

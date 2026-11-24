@@ -34,7 +34,7 @@ export default function IssueDetail() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="card">
+        <div className="card" data-tour="lot-production">
           <h2>Production records for affected lots</h2>
           {i.production.length === 0 ? <p className="muted">No lot codes linked to this issue yet.</p> : (
             <table>

@@ -41,7 +41,7 @@ export default function Reports() {
     <Page title="Management reports" sub="Numbers computed in code; the AI only writes the narrative. A new report is also generated every Monday."
       actions={canGen && <>
         <select value={days} onChange={(e) => setDays(+e.target.value)} style={{ width: 130 }}><option value={7}>Last 7 days</option><option value={14}>Last 14 days</option><option value={30}>Last 30 days</option></select>
-        <button className="btn" disabled={busy} onClick={generate}>{busy ? 'Generating…' : 'Generate report'}</button></>}>
+        <button className="btn" data-tour="generate" disabled={busy} onClick={generate}>{busy ? 'Generating…' : 'Generate report'}</button></>}>
       {err && <ErrorBox error={err} />}
       <div className="split" style={{ gridTemplateColumns: '280px minmax(0,1fr)' }}>
         <div className="card" style={{ padding: 8 }}>
@@ -53,7 +53,7 @@ export default function Reports() {
             </div>
           ))}
         </div>
-        <div className="card md">
+        <div className="card md" data-tour="report">
           {rep ? <Markdown remarkPlugins={[remarkGfm]}>{rep.content_md}</Markdown> : <p className="muted">Select a report.</p>}
         </div>
       </div>

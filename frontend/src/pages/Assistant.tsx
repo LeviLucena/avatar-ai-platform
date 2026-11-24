@@ -43,7 +43,7 @@ export default function Assistant() {
   return (
     <Page title="Ops assistant" sub="An agent that answers from live company data through permissioned, read-only tools — no free-form SQL">
       <div className="split" style={{ gridTemplateColumns: 'minmax(0,1fr) 280px' }}>
-        <div className="card">
+        <div className="card" data-tour="assistant">
           <div className="chat">
             {msgs.length === 0 && (
               <div>

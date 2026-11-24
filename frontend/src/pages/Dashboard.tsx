@@ -16,7 +16,7 @@ export default function Dashboard() {
 
   return (
     <Page title="Dashboard" sub={`Customer quality overview · last 30 days · viewing as ${d.role}`} actions={<Engine e={d.llm_engine} />}>
-      <div className="grid g4" style={{ marginBottom: 16 }}>
+      <div className="grid g4" style={{ marginBottom: 16 }} data-tour="kpis">
         <Kpi label="Complaints (30 days)" value={k.complaints_30d} />
         <Kpi label="Critical, not yet answered" value={k.critical_open} tone={k.critical_open ? 'alert' : undefined} />
         <Kpi label="Escalated, open" value={k.escalated_open} tone={k.escalated_open ? 'warn' : undefined} />

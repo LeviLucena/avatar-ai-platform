@@ -47,7 +47,7 @@ export default function ComplaintDetail() {
       {c.status === 'new' && <div className="callout warn" style={{ marginBottom: 14 }}>The AI pipeline is still processing this complaint…</div>}
       {c.status === 'failed' && <div className="callout crit" style={{ marginBottom: 14 }}>Processing failed: {c.error}</div>}
       {c.escalated && (
-        <div className={`callout ${c.severity === 'critical' ? 'crit' : 'warn'}`} style={{ marginBottom: 14 }}>
+        <div className={`callout ${c.severity === 'critical' ? 'crit' : 'warn'}`} style={{ marginBottom: 14 }} data-tour="escalation">
           <b>Escalated to {c.route_to}.</b> Rules that triggered this:
           <ul>{c.escalation_reasons.map((r: string) => <li key={r}>{r}</li>)}</ul>
         </div>
@@ -95,7 +95,7 @@ export default function ComplaintDetail() {
           )}
         </div>
 
-        <div className="card">
+        <div className="card" data-tour="draft">
           <h2>Draft reply</h2>
           {c.draft_flags.length > 0 && <div className="callout warn" style={{ marginBottom: 10 }}>Guardrails: {c.draft_flags.join('; ')}</div>}
           <textarea value={draft} onChange={(e) => setDraft(e.target.value)} readOnly={!canEdit} style={{ minHeight: 260 }} />
